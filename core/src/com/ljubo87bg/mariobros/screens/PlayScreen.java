@@ -18,6 +18,7 @@ import com.ljubo87bg.mariobros.MarioBros;
 import com.ljubo87bg.mariobros.scenes.Hud;
 import com.ljubo87bg.mariobros.sprites.Mario;
 import com.ljubo87bg.mariobros.tools.B2WorldCreator;
+import com.ljubo87bg.mariobros.tools.WorldContactListener;
 
 import static com.ljubo87bg.mariobros.MarioBros.PPM;
 
@@ -45,7 +46,7 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MarioBros game){
 
-        atlas = new TextureAtlas("Mario_and_Enemies.atlas");
+        atlas = new TextureAtlas("Mario_and_Enemies.pack");
         this.game = game;
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(MarioBros.V_WIDTH / PPM, MarioBros.V_HEIGHT / PPM, gameCam);
@@ -61,6 +62,7 @@ public class PlayScreen implements Screen {
 
         player = new Mario(world, this);
 
+        world.setContactListener(new WorldContactListener());
     }
 
     public void handleInput(float dt){
