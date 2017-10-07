@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ljubo87bg.mariobros.MarioBros;
+import com.ljubo87bg.mariobros.scenes.Controller;
 import com.ljubo87bg.mariobros.scenes.Hud;
 import com.ljubo87bg.mariobros.sprites.enemies.Enemy;
 import com.ljubo87bg.mariobros.sprites.Mario;
@@ -41,6 +42,7 @@ public class PlayScreen implements Screen {
     private OrthographicCamera gameCam;
     private Viewport gamePort;
     private Hud hud;
+    private Controller controller;
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
@@ -59,6 +61,7 @@ public class PlayScreen implements Screen {
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(MarioBros.V_WIDTH / PPM, MarioBros.V_HEIGHT / PPM, gameCam);
         hud = new Hud(game.batch);
+        controller = new Controller(game.batch);
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level1.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, 1 / PPM);
@@ -90,13 +93,13 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
         if (player.currentState != Mario.State.DEAD) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            if (controller.isUpPressed() && player.b2body.getLinearVelocity().y == 0) {
                 player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && (player.b2body.getLinearVelocity().x <= 2)) {
+            if (controller.isRightPressed() && (player.b2body.getLinearVelocity().x <= 2)) {
                 player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && (player.b2body.getLinearVelocity().x >= -2)) {
+            if (controller.isLeftPressed() && (player.b2body.getLinearVelocity().x >= -2)) {
                 player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
             }
         }
@@ -158,6 +161,7 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
+        controller.draw();
         if (gameOver()){
             game.setScreen(new GameOverScreen(game));
             dispose();
@@ -174,6 +178,7 @@ public class PlayScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         gamePort.update(width, height);
+        controller.resize(width, height);
     }
 
     public TiledMap getMap(){

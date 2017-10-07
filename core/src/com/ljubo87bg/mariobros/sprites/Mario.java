@@ -17,6 +17,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ljubo87bg.mariobros.MarioBros;
 import com.ljubo87bg.mariobros.screens.PlayScreen;
+import com.ljubo87bg.mariobros.sprites.enemies.Enemy;
+import com.ljubo87bg.mariobros.sprites.enemies.Turtle;
 
 /**
  * Created by Ljubo on 15.9.2017 г..
@@ -256,7 +258,7 @@ public class Mario extends Sprite {
         EdgeShape feet = new EdgeShape();
         feet.set(new Vector2(-2 / MarioBros.PPM, -6 / MarioBros.PPM), new Vector2(2 / MarioBros.PPM, -6 / MarioBros.PPM));
         fdef.shape = feet;
-        b2body.createFixture(fdef);
+        b2body.createFixture(fdef).setUserData(this);
         EdgeShape head = new EdgeShape();
         head.set(new Vector2(-2 / MarioBros.PPM, 6 / MarioBros.PPM), new Vector2(2 / MarioBros.PPM, 6 / MarioBros.PPM));
         fdef.filter.categoryBits = MarioBros.MARIO_HEAD_BIT;
@@ -269,8 +271,10 @@ public class Mario extends Sprite {
         return marioIsBig;
     }
 
-    public void hit() {
-        if (marioIsBig){
+    public void hit(Enemy enemy) {
+        if (enemy instanceof Turtle && ((Turtle) enemy).getCurrentState() == Turtle.State.STANDING_SHELL){
+            ((Turtle) enemy).kick(this.getX() <= enemy.getX() ? Turtle.KICK_RIGHT_SPEED : Turtle.KICK_LEFT_SPEED);
+        } else if (marioIsBig){
             marioIsBig = false;
             timeToRedefineMario = true;
             setBounds(getX(), getY(), getWidth(), getHeight() / 2);
